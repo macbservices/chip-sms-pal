@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Copy, Check, Loader2 } from 'lucide-react';
 import type { Purchase } from '@/lib/store';
-import { useAppStore } from '@/lib/store';
 import { toast } from 'sonner';
 
 interface SmsModalProps {
@@ -10,9 +9,7 @@ interface SmsModalProps {
   onClose: () => void;
 }
 
-const SmsModal = ({ purchase: initialPurchase, onClose }: SmsModalProps) => {
-  const purchases = useAppStore((s) => s.purchases);
-  const purchase = purchases.find((p) => p.id === initialPurchase.id) || initialPurchase;
+const SmsModal = ({ purchase, onClose }: SmsModalProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -40,10 +37,8 @@ const SmsModal = ({ purchase: initialPurchase, onClose }: SmsModalProps) => {
         className="glass-card rounded-2xl p-8 w-full max-w-md text-center relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
-        >
+        <button onClick={onClose}
+          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
           <X className="w-5 h-5" />
         </button>
 
@@ -55,14 +50,9 @@ const SmsModal = ({ purchase: initialPurchase, onClose }: SmsModalProps) => {
         <div className={`rounded-xl p-6 mb-6 ${purchase.codigoSms ? 'bg-success/10 border-2 border-success/30' : 'bg-secondary'}`}>
           {purchase.codigoSms ? (
             <div className="flex items-center justify-center gap-3">
-              <span className="text-3xl font-mono font-bold text-accent tracking-widest">
-                {purchase.codigoSms}
-              </span>
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={handleCopy}
-                className="p-2 rounded-lg bg-accent/20 text-accent"
-              >
+              <span className="text-3xl font-mono font-bold text-accent tracking-widest">{purchase.codigoSms}</span>
+              <motion.button whileTap={{ scale: 0.9 }} onClick={handleCopy}
+                className="p-2 rounded-lg bg-accent/20 text-accent">
                 {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
               </motion.button>
             </div>

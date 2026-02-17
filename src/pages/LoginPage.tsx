@@ -1,39 +1,49 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Smartphone, Lock, User, UserPlus } from 'lucide-react';
-import { useAppStore } from '@/lib/store';
+import { Smartphone, Lock, User, UserPlus, Mail } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [isRegister, setIsRegister] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, register } = useAppStore();
+  const { signIn, signUp, user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (user) {
+    navigate('/dashboard');
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     if (isRegister) {
-      if (register(username, password)) {
-        toast.success('Conta criada com sucesso! Saldo: R$ 50,00');
-        navigate('/dashboard');
+      const { error } = await signUp(email, password, username || email.split('@')[0]);
+      if (error) {
+        toast.error(error);
       } else {
-        toast.error('Usuário já existe!');
+        toast.success('Conta criada! Verifique seu email para confirmar.');
       }
     } else {
-      if (login(username, password)) {
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast.error(error);
+      } else {
         toast.success('Login realizado!');
         navigate('/dashboard');
-      } else {
-        toast.error('Usuário ou senha incorretos!');
       }
     }
+    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background effects */}
       <div className="absolute inset-0 gradient-primary opacity-20" />
       <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-accent/10 blur-3xl" />
@@ -58,13 +68,25 @@ const LoginPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {isRegister && (
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Nome de usuário"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+          )}
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
-              type="text"
-              placeholder="Usuário"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full pl-11 pr-4 py-3 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-foreground placeholder:text-muted-foreground"
             />
@@ -73,10 +95,11 @@ const LoginPage = () => {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="password"
-              placeholder="Senha"
+              placeholder="Senha (mínimo 6 caracteres)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
               className="w-full pl-11 pr-4 py-3 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -85,9 +108,12 @@ const LoginPage = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full py-3 gradient-primary rounded-xl font-semibold text-primary-foreground glow-primary transition-shadow hover:shadow-lg"
+            disabled={isLoading}
+            className="w-full py-3 gradient-primary rounded-xl font-semibold text-primary-foreground glow-primary transition-shadow hover:shadow-lg disabled:opacity-50"
           >
-            {isRegister ? (
+            {isLoading ? (
+              <span>Carregando...</span>
+            ) : isRegister ? (
               <span className="flex items-center justify-center gap-2"><UserPlus className="w-5 h-5" /> Criar Conta</span>
             ) : (
               <span className="flex items-center justify-center gap-2"><Lock className="w-5 h-5" /> Entrar</span>
@@ -103,10 +129,6 @@ const LoginPage = () => {
             {isRegister ? 'Já tem conta? Faça login' : 'Não tem conta? Registre-se'}
           </button>
         </div>
-
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          Demo: admin / 123
-        </p>
       </motion.div>
     </div>
   );
