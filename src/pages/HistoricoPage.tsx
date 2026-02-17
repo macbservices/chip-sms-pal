@@ -1,0 +1,78 @@
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { useAppStore } from '@/lib/store';
+
+const HistoricoPage = () => {
+  const navigate = useNavigate();
+  const { user, purchases } = useAppStore();
+
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen">
+      <header className="glass-card border-b border-border sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <h1 className="text-xl font-display font-bold text-gradient">Histórico</h1>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground bg-secondary rounded-xl px-4 py-2 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Dashboard
+          </button>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <p className="text-muted-foreground mb-6">Total: {purchases.length} compras</p>
+
+        {purchases.length === 0 ? (
+          <div className="glass-card rounded-2xl p-12 text-center">
+            <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhuma compra realizada ainda</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {purchases.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="glass-card rounded-xl p-4 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${p.usado ? 'bg-success/20' : 'bg-warning/20'}`}>
+                    {p.usado ? (
+                      <CheckCircle className="w-5 h-5 text-success" />
+                    ) : (
+                      <Clock className="w-5 h-5 text-warning animate-pulse-glow" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground">{p.servico}</p>
+                    <p className="text-sm text-muted-foreground">{p.numero}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-foreground">R$ {p.preco.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(p.timestamp).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                  </p>
+                  {p.codigoSms && (
+                    <p className="text-sm font-mono text-accent font-bold mt-1">{p.codigoSms}</p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default HistoricoPage;
