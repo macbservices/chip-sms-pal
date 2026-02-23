@@ -14,6 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
+      chips: {
+        Row: {
+          created_at: string
+          iccid: string | null
+          id: string
+          modem_id: string
+          operator: string | null
+          phone_number: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          iccid?: string | null
+          id?: string
+          modem_id: string
+          operator?: string | null
+          phone_number: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          iccid?: string | null
+          id?: string
+          modem_id?: string
+          operator?: string | null
+          phone_number?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chips_modem_id_fkey"
+            columns: ["modem_id"]
+            isOneToOne: false
+            referencedRelation: "modems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          api_key: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_seen_at: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_seen_at?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_seen_at?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      modems: {
+        Row: {
+          created_at: string
+          id: string
+          imei: string | null
+          last_seen_at: string | null
+          location_id: string
+          operator: string | null
+          port_name: string
+          signal_strength: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          imei?: string | null
+          last_seen_at?: string | null
+          location_id: string
+          operator?: string | null
+          port_name: string
+          signal_strength?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          imei?: string | null
+          last_seen_at?: string | null
+          location_id?: string
+          operator?: string | null
+          port_name?: string
+          signal_strength?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modems_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
