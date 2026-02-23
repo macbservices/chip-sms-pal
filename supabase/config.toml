@@ -1,1 +1,4 @@
 project_id = "unsnuvwpekuzgduhpxkv"
+
+[functions.gsm-gateway]
+verify_jwt = false

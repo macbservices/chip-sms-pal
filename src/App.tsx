@@ -9,6 +9,7 @@ import DashboardPage from "./pages/DashboardPage";
 import PixPage from "./pages/PixPage";
 import HistoricoPage from "./pages/HistoricoPage";
 import AdminPage from "./pages/AdminPage";
+import ColaboradorPage from "./pages/ColaboradorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/pix" element={<PixPage />} />
             <Route path="/historico" element={<HistoricoPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/colaborador" element={<ColaboradorPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
